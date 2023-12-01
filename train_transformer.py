@@ -12,16 +12,15 @@ def adjust_learning_rate(optimizer, step_num, warmup_step=4000):
 
         
 def main():
-
     dataset = get_dataset()
     global_step = 0
     
-    m = nn.DataParallel(Model().cuda())
+    m = nn.DataParallel(Model().cpu())
 
     m.train()
     optimizer = t.optim.Adam(m.parameters(), lr=hp.lr)
 
-    pos_weight = t.FloatTensor([5.]).cuda()
+    pos_weight = t.FloatTensor([5.]).cpu()
     writer = SummaryWriter()
     
     for epoch in range(hp.epochs):
@@ -38,11 +37,11 @@ def main():
             
             stop_tokens = t.abs(pos_mel.ne(0).type(t.float) - 1)
             
-            character = character.cuda()
-            mel = mel.cuda()
-            mel_input = mel_input.cuda()
-            pos_text = pos_text.cuda()
-            pos_mel = pos_mel.cuda()
+            character = character.cpu()
+            mel = mel.cpu()
+            mel_input = mel_input.cpu()
+            pos_text = pos_text.cpu()
+            pos_mel = pos_mel.cpu()
             
             mel_pred, postnet_pred, attn_probs, stop_preds, attns_enc, attns_dec = m.forward(character, mel_input, pos_text, pos_mel)
 

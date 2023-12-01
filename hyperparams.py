@@ -29,8 +29,8 @@ save_step = 2000
 image_step = 500
 batch_size = 32
 
-cleaners='english_cleaners'
+cleaners='basic_cleaners'
 
-data_path = './data/LJSpeech-1.1'
+data_path = 'TransformerTTSVietnamese/data/vietnamese'
 checkpoint_path = './checkpoint'
 sample_path = './samples'

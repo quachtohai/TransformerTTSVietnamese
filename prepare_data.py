@@ -16,17 +16,28 @@ class PrepareDataset(Dataset):
             root_dir (string): Directory with all the wavs.
 
         """
-        self.landmarks_frame = pd.read_csv(csv_file, sep='|', header=None)
+        self.landmarks_frame = self.read_txt(root_dir)
         self.root_dir = root_dir
 
     def load_wav(self, filename):
         return librosa.load(filename, sr=hp.sample_rate)
 
+    def read_txt(self, in_dir):
+        all_files = os.listdir(in_dir)
+        txt_files = filter(lambda x: x[-4:] == '.txt', all_files)
+        txt_file_wavs = []
+        for txt_file in txt_files:            
+            txt_file_wavs.append(txt_file.replace(".txt",""))            
+        return txt_file_wavs
+    
     def __len__(self):
         return len(self.landmarks_frame)
-
+    def read_first_line(self, file):
+        with open(file, 'rt', encoding='utf-8') as fd:
+            first_line = fd.readline()
+            return first_line
     def __getitem__(self, idx):
-        wav_name = os.path.join(self.root_dir, self.landmarks_frame.ix[idx, 0]) + '.wav'
+        wav_name = os.path.join(self.root_dir, self.landmarks_frame[idx]) + '.wav'
         mel, mag = get_spectrograms(wav_name)
         
         np.save(wav_name[:-4] + '.pt', mel)
@@ -37,7 +48,7 @@ class PrepareDataset(Dataset):
         return sample
     
 if __name__ == '__main__':
-    dataset = PrepareDataset(os.path.join(hp.data_path,'metadata.csv'), os.path.join(hp.data_path,'wavs'))
+    dataset = PrepareDataset(os.path.join(hp.data_path,''), os.path.join(hp.data_path,''))
     dataloader = DataLoader(dataset, batch_size=1, drop_last=False, num_workers=8)
     from tqdm import tqdm
     pbar = tqdm(dataloader)

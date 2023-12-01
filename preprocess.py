@@ -21,7 +21,7 @@ class LJDatasets(Dataset):
             root_dir (string): Directory with all the wavs.
 
         """
-        self.landmarks_frame = pd.read_csv(csv_file, sep='|', header=None)
+        self.landmarks_frame = self.read_txt(root_dir)
         self.root_dir = root_dir
 
     def load_wav(self, filename):
@@ -29,10 +29,24 @@ class LJDatasets(Dataset):
 
     def __len__(self):
         return len(self.landmarks_frame)
+    def read_txt(self, in_dir):
+        all_files = os.listdir(in_dir)
+        txt_files = filter(lambda x: x[-4:] == '.txt', all_files)
+        txt_file_wavs = []
+        file_contents = []
+        for txt_file in txt_files:
+            txt_file = txt_file.replace(".txt","")            
+            txt_file_wavs.append(txt_file.replace(".txt",""))
+            file_contents = self.read_first_line(f"TransformerTTSVietnamese/data/vietnamese/{txt_file}.txt")            
+        return txt_file_wavs, file_contents
+    def read_first_line(self, file):
+        with open(file, 'rt', encoding='utf-8') as fd:
+            first_line = fd.readline()
+            return first_line
 
     def __getitem__(self, idx):
-        wav_name = os.path.join(self.root_dir, self.landmarks_frame.ix[idx, 0]) + '.wav'
-        text = self.landmarks_frame.ix[idx, 1]
+        wav_name = os.path.join(self.root_dir, self.landmarks_frame[idx,0]) + '.wav'
+        text = self.landmarks_frame[idx, 1]
 
         text = np.asarray(text_to_sequence(text, [hp.cleaners]), dtype=np.int32)
         mel = np.load(wav_name[:-4] + '.pt.npy')
@@ -42,7 +56,7 @@ class LJDatasets(Dataset):
         pos_mel = np.arange(1, mel.shape[0] + 1)
 
         sample = {'text': text, 'mel': mel, 'text_length':text_length, 'mel_input':mel_input, 'pos_mel':pos_mel, 'pos_text':pos_text}
-
+        print(sample)    
         return sample
     
 class PostDatasets(Dataset):
@@ -55,7 +69,7 @@ class PostDatasets(Dataset):
             root_dir (string): Directory with all the wavs.
 
         """
-        self.landmarks_frame = pd.read_csv(csv_file, sep='|', header=None)
+        self.landmarks_frame = self.read_txt(root_dir)
         self.root_dir = root_dir
 
     def __len__(self):
@@ -68,7 +82,20 @@ class PostDatasets(Dataset):
         sample = {'mel':mel, 'mag':mag}
 
         return sample
-    
+    def read_txt(self, in_dir):
+        all_files = os.listdir(in_dir)
+        txt_files = filter(lambda x: x[-4:] == '.txt', all_files)
+        txt_file_wavs = []
+        file_contents = []
+        for txt_file in txt_files:
+            txt_file = txt_file.replace(".txt","")                        
+            txt_file_wavs.append(txt_file.replace(".txt",""))
+            file_contents = self.read_first_line(f"data/vietnamese/{txt_file}.txt")            
+        return txt_file_wavs, file_contents
+    def read_first_line(self, file):
+        with open(file, 'rt', encoding='utf-8') as fd:
+            first_line = fd.readline()
+            return first_line
 def collate_fn_transformer(batch):
 
     # Puts each data field into a tensor with outer dimension batch size
@@ -139,10 +166,10 @@ def get_param_size(model):
     return params
 
 def get_dataset():
-    return LJDatasets(os.path.join(hp.data_path,'metadata.csv'), os.path.join(hp.data_path,'wavs'))
+    return LJDatasets(os.path.join(hp.data_path,''), os.path.join(hp.data_path,''))
 
 def get_post_dataset():
-    return PostDatasets(os.path.join(hp.data_path,'metadata.csv'), os.path.join(hp.data_path,'wavs'))
+    return PostDatasets(os.path.join(hp.data_path,''), os.path.join(hp.data_path,''))
 
 def _pad_mel(inputs):
     _pad = 0
