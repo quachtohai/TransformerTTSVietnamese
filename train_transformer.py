@@ -1,5 +1,5 @@
-from preprocess import get_dataset, DataLoader, collate_fn_transformer
-from network import *
+from TransformerTTSVietnamese.preprocess import get_dataset, DataLoader, collate_fn_transformer
+from TransformerTTSVietnamese.network import *
 from tensorboardX import SummaryWriter
 import torchvision.utils as vutils
 import os
