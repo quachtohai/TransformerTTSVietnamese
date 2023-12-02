@@ -14,7 +14,7 @@ import math
 class LJDatasets(Dataset):
     """LJSpeech dataset."""
 
-    def __init__(self, csv_file, root_dir):
+    def __init__(self, output_dir, root_dir):
         """
         Args:
             csv_file (string): Path to the csv file with annotations.
@@ -23,6 +23,7 @@ class LJDatasets(Dataset):
         """
         self.landmarks_frame = self.read_txt(root_dir)
         self.root_dir = root_dir
+        self.output_dir = output_dir
 
     def load_wav(self, filename):
         return librosa.load(filename, sr=hp.sample_rate)
@@ -37,7 +38,7 @@ class LJDatasets(Dataset):
         for txt_file in txt_files:
             txt_file = txt_file.replace(".txt","")            
             txt_file_wavs.append(txt_file.replace(".txt",""))
-            file_contents = self.read_first_line(f"TransformerTTSVietnamese/data/vietnamese/{txt_file}.txt")            
+            file_contents = self.read_first_line(f"/kaggle/input/vin-big-data-vlsp-2020-100h/vlsp2020_train_set_02/{txt_file}.txt")            
         return txt_file_wavs, file_contents
     def read_first_line(self, file):
         with open(file, 'rt', encoding='utf-8') as fd:
@@ -45,7 +46,7 @@ class LJDatasets(Dataset):
             return first_line
 
     def __getitem__(self, idx):
-        wav_name = os.path.join(self.root_dir, self.landmarks_frame[idx,0]) + '.wav'
+        wav_name = os.path.join(self.output_dir, self.landmarks_frame[idx,0]) + '.wav'
         text = self.landmarks_frame[idx, 1]
 
         text = np.asarray(text_to_sequence(text, [hp.cleaners]), dtype=np.int32)
@@ -62,7 +63,7 @@ class LJDatasets(Dataset):
 class PostDatasets(Dataset):
     """LJSpeech dataset."""
 
-    def __init__(self, csv_file, root_dir):
+    def __init__(self, output_dir, root_dir):
         """
         Args:
             csv_file (string): Path to the csv file with annotations.
@@ -71,12 +72,13 @@ class PostDatasets(Dataset):
         """
         self.landmarks_frame = self.read_txt(root_dir)
         self.root_dir = root_dir
+        self.output_dir = output_dir
 
     def __len__(self):
         return len(self.landmarks_frame)
 
     def __getitem__(self, idx):
-        wav_name = os.path.join(self.root_dir, self.landmarks_frame.ix[idx, 0]) + '.wav'
+        wav_name = os.path.join(self.output_dir, self.landmarks_frame.ix[idx, 0]) + '.wav'
         mel = np.load(wav_name[:-4] + '.pt.npy')
         mag = np.load(wav_name[:-4] + '.mag.npy')
         sample = {'mel':mel, 'mag':mag}
@@ -90,7 +92,7 @@ class PostDatasets(Dataset):
         for txt_file in txt_files:
             txt_file = txt_file.replace(".txt","")                        
             txt_file_wavs.append(txt_file.replace(".txt",""))
-            file_contents = self.read_first_line(f"data/vietnamese/{txt_file}.txt")            
+            file_contents = self.read_first_line(f"/kaggle/input/vin-big-data-vlsp-2020-100h/vlsp2020_train_set_02/{txt_file}.txt")            
         return txt_file_wavs, file_contents
     def read_first_line(self, file):
         with open(file, 'rt', encoding='utf-8') as fd:

@@ -32,6 +32,7 @@ batch_size = 32
 cleaners='basic_cleaners'
 
 data_path = '/kaggle/input/vin-big-data-vlsp-2020-100h/vlsp2020_train_set_02'
+output_dir ='/kaggle/working/TransformerTTSVietnamese'
 checkpoint_path = './checkpoint'
 sample_path = './samples'
 
