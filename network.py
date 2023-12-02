@@ -1,6 +1,6 @@
-from TransformerTTSVietnamese.module import *
-from TransformerTTSVietnamese.utils import get_positional_table, get_sinusoid_encoding_table
-import TransformerTTSVietnamese.hyperparams as hp
+from module import *
+from utils import get_positional_table, get_sinusoid_encoding_table
+import hyperparams as hp
 import copy
 
 class Encoder(nn.Module):

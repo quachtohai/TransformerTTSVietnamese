@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 from torch.utils.data import Dataset, DataLoader
 import os
-from TransformerTTSVietnamese.utils import get_spectrograms
-import TransformerTTSVietnamese.hyperparams as hp
+from utils import get_spectrograms
+import hyperparams as hp
 import librosa
 
 class PrepareDataset(Dataset):

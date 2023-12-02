@@ -1,10 +1,10 @@
 import torch as t
 from utils import spectrogram2wav
 from scipy.io.wavfile import write
-import TransformerTTSVietnamese.hyperparams as hp
-from TransformerTTSVietnamese.text import text_to_sequence
+import hyperparams as hp
+from text import text_to_sequence
 import numpy as np
-from TransformerTTSVietnamese.network import ModelPostNet, Model
+from network import ModelPostNet, Model
 from collections import OrderedDict
 from tqdm import tqdm
 import argparse
